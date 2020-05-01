@@ -86,7 +86,7 @@ def update_session(get_soup=False):
 if mode in ['base', 'base_only']:
     # backup up base log if already exists
     if os.path.exists(log_base_data):
-        os.rename(log_base_data, archive_path + dtnow() + "_" + os.path.basename(log_base_data))
+        os.rename(log_base_data, path_archive + dtnow() + "_" + os.path.basename(log_base_data))
 
     # save introductory records
     fh = open(log_base_data, "w")
@@ -143,7 +143,12 @@ def get_lvl2(crc, get_soup=False):
 
     payload = [('j_idt9', 'j_idt9'), ("j_idt9:j_idt12", ''), ('javax.faces.ViewState', viewstate_id), (crc, crc)]
 
-    sub_req_result = requests.post(main_url, headers=headers, data=payload)
+    try:
+        sub_req_result = requests.post(main_url, headers=headers, data=payload)
+    except requests.exceptions.ConnectionError:
+        print("Failed to retrieve level 2, taking a 10 second break and trying again.")
+        time.sleep(10)
+        sub_req_result = requests.post(main_url, headers=headers, data=payload)
 
     if get_soup:
         # parse this new file, use soup again
@@ -161,7 +166,7 @@ if mode in ['base', 'meta', 'meta_only']:
 
     # backup up meta log if already exists
     if os.path.exists(log_meta_data):
-        os.rename(log_meta_data, archive_path + dtnow() + "_" + os.path.basename(log_meta_data))
+        os.rename(log_meta_data, path_archive + dtnow() + "_" + os.path.basename(log_meta_data))
 
     # Add table headers
     fh = open(log_meta_data, 'w')
@@ -222,16 +227,26 @@ if mode in ['base', 'meta', 'meta_only']:
 # PART 3 - Get the number of hourly trips in *each* direction for each counter
 ##############################################################################
 
-# 
+# count successes retrievals of data
+count_successes = 0
+# used to 'reset' id  
 query_counter = 0
 
-def retrieved_dates(cid, dirid):
+def retrieved_dates(group, cid, dirid):
     dates = []
+
+    # ugh, shouldn't have differentiated between cars and bicycles
+    counter_path = path_counter_details + cid + "_dir_" + dirid + "_cars.txt"
+    if group == "Piste cyclable":
+        counter_path = path_counter_details + cid + "_dir_" + dirid + "_bicycle.txt"
+
     try:
-        with open(path_counter_details + cid + "_dir_" + dirid + "_cars.txt") as daily_records:
+        with open(counter_path) as daily_records:
             for record in daily_records:
                 dates.append(record.split("\t")[0])
     except FileNotFoundError:
+        print("Searched for counter file: " + counter_path)
+        print("Couldn't find it.")
         print("Counter file for counter id " + cid + " in direction " + dirid + " does not yet exist. Creating it.")
 
     return(dates)
@@ -276,11 +291,11 @@ if mode in ['base', 'meta', 'details', 'details_only']:
                 print("Error, did not find expected number of parts (12). Found " + str(len(parts)))
                 print(len(parts))
                 exit(parts)
-            
+
             print("Processing cid " + cid + ", direction " + dirid + ": ")
 
             # Open counter record file and retrieve the list of dates that we already have data for
-            already_retrieved_dates = retrieved_dates(cid, dirid)
+            already_retrieved_dates = retrieved_dates(group, cid, dirid)
 
             # This counter has data available between (inclusive) these dates
             start_date = datetime.strptime(date_from, "%d.%m.%Y").date()
@@ -347,7 +362,12 @@ if mode in ['base', 'meta', 'details', 'details_only']:
                 #requests_log.setLevel(logging.DEBUG)
                 #requests_log.propagate = True
 
-                details_req_result = requests.post(data_url + ";jsessionid=" + session_id, headers=headers, data=payload)
+                try:
+                    details_req_result = requests.post(data_url + ";jsessionid=" + session_id, headers=headers, data=payload)
+                except requests.exceptions.ConnectionError:
+                    print("Had an error retrieving details, skipping the rest of this counter.")
+                    # we'll get this next time
+                    break
 
                 soup = BeautifulSoup(details_req_result.text, 'html.parser')
 
@@ -382,6 +402,7 @@ if mode in ['base', 'meta', 'details', 'details_only']:
                         print("\nBad data - bicycle data is all zeros.")
                         zeroline = True
                     else:
+                        count_successes += 1
                         query_counter += 1
 
                     detailsfh = open(path_counter_details + cid + "_dir_" + dirid + "_bicycle.txt", 'a')
@@ -413,6 +434,7 @@ if mode in ['base', 'meta', 'details', 'details_only']:
                         print("Bad data - car data is all zeros.")
                         zeroline = True
                     else:
+                        count_successes += 1
                         query_counter += 1
 
                     detailsfh = open(path_counter_details + cid + "_dir_" + dirid + "_cars.txt", 'a')
@@ -439,6 +461,7 @@ if mode in ['base', 'meta', 'details', 'details_only']:
             #exit("TESTING multiple calls (all available dates) for one counter")
             # end of processing counters, and all the dates
 
+        print("Retrieved successfully " + str(count_successes) + " records.")
         exit("Finished running '" + mode + "' processing exclusively.")
 
 print("Finished processing")

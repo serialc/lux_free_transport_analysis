@@ -1,4 +1,9 @@
 testing
+arduino
 pch_data/data/
+gmaps_directions
 *.qgz
 *.xlsx
+.Rproj.user
+Monthly passes/
+pch_data/data_backup.zip
