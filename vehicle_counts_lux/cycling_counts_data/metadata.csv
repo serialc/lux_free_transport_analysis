@@ -1,0 +1,39 @@
+LOCALITE,ROUTE,SENS,D1,D2,COORD_X,COORD_Y
+2001,MONUMENT R. SCHUMAN,PC00,Centre vers Limpertsberg,Centre,Limpertsberg,77158,75832
+2002,MERKHOLZ,PC20,Weidingen vers Kautenbach,Weidingen,Kautenbach,65992.81,114056.31
+2011,STRASSEN,PC01,Strassen vers Merl,Strassen,Merl,74074.555,75367.98
+2012,EICH,PC01,Biergerkräiz vers Eich,Biergerkräiz,Eich,76849.16,77776.56
+2013,DOMMELDANGE,PC01,Dommeldange vers Gréngewald,Gréngewald,Dommeldange,78483,78061.47
+2014,CESSANGE,PC01,Kockelscheur vers Cessange,Kockelscheur,Cessange,74750.58,71096.164
+2021,WALDHOF,PC02,Senningerberg vers Kirchberg,Senningerberg,Kirchberg,81312.0728345135,78391.0459182048
+2022,ERNSTER,PC02,Gonderange vers Ernster,Gonderange,Ernster,85845.86,82815.805
+2023,PONT GD CHARLOTTE,PC02,Kirchberg vers Limpertsberg,Kirchberg,Limpertsberg,77165,75846
+2024,LIMPERTSBERG,PC02,Limpertsberg vers Kirchberg,Limpertsberg,Kirchberg,77147,75837
+2031,BECH-KLEINMACHER,PC03,Bech-Kleinmacher vers Remich,Bech-Kleinmacher,Remich,93735.1727,65102.3788
+2032,ECHTERNACH,PC03,Weilerbach vers Echternach,Weilerbach,Echternach,97397.695,98130.805
+2033,MERTERT GREVENMACHER,PC3,Grevenmacher vers Mertert,Grevenmacher,Mertert,102024.24,85311.59
+2034,MERTERT WASSERBILLIG,PC03,Wasserbillig vers Mertert,Wasserbillig,Mertert,102040.12,85299.84
+2041,MERTERT,PC04,Manternach vers Mertert,Manternach,Mertert,102034.44,85312.31
+2051,MEDERNACH,PC05,Medernach vers Larochette,Medernach,Larochette,83684.195,95899.1
+2061,SCHIFFLANGE,PC06,Noertzange vers Schifflange,Noertzange,Schifflange,70572.88,63550.664
+2071,ELLANGE,PC07,Scheuerberg vers Ellange-Gare,Scheuerberg,Ellange-Gare,90014.43,64823.4
+2081,BELVAUX,PC08,Agora vers Belvaux,Agora,Belvaux,62935,63832
+2091,LEUDELANGE,PC09,Roedgen vers Leudelange,Roedgen,Leudelange,71205.988,70580.3535
+2121,NOERDANGE,PC12,Niederpallen vers Noerdange,Niederpallen,Noerdange,62296.9085,90034.6573
+2122,NOERDANGE USELDANGE,PC12,Useldange vers Noerdange,Useldange,Noerdange,62320.734,90074.22
+2123,COLMAR-BERG,PC12,Bissen vers Colmar-Berg,Bissen,Colmar-Berg,74928.6,97852.79
+2124,CLEMENCY,PC12,Grass vers Hautcharage,Grass,Hautcharage,59019.344,74582.59
+2131,MAMER,PC13,Mamer vers Strassen,Mamer,Strassen,70341.371,76213.026
+2151,HEISDORF,PC15,Bofferdange vers Walferdange,Bofferdange,Walferdange,77343.1318023461,81957.7403117379
+2152,HELMDANGE,PC15,Lorentzweiler vers Bofferdange,Lorentzweiler,Bofferdange,77900.1803367564,84197.4250052396
+2153,ROLLINGEN,PC15,Mersch vers Lintgen,Mersch,Lintgen,75927.9968541424,89601.2514804578
+2154,COLMAR,PC15,Cruchten vers Colmar-Berg,Cruchten,Colmar-Berg,74935.266,97853.64
+2155,SCHIEREN,PC15,Schieren vers Colmar-Berg,Schieren,Colmar-Berg,74925.53,97871.42
+2161,INGELDORF,PC16,Diekirch vers Ettelbruck,Diekirch,Ettelbruck,77385.3796102571,101768.484382846
+2171,NOERDANGE NIEDERPALLEN,PC17,Niederpallen vers Noerdange,Niederpallen,Noerdange,62309.094,90078.805
+2201,KAUTENBACH,PC20,Wiltz vers Kautenbach,Wiltz,Kautenbach,68073,195,113148,8
+2211,TROISVIERGES,PC21,Wilwerdange vers Troisvierges,Wilwerdange,Troisvierges,67197.0745208817,132803.490294255
+2221,HOSINGEN,PC22,Lellingen vers Wahlhausen,Lellingen,Wahlhausen,74114.234,118292.112
+2231,FOUHREN,PC23,Bettel vers Fouhren,Bettel,Fouhren,82545.37,109040.42
+2301,AGORA,PC30,Belvaux vers Agora,Belvaux,Agora,64157.42,63589.92
+2311,PONT ADOLPHE,PC31b,Gare Luxembourg vers Centre Luxembourg,Gare Luxembourg,Centre Luxembourg,77019.92,74736.4

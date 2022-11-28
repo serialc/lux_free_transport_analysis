@@ -7,18 +7,18 @@ from pathlib import Path
 #import logging, http.client
 
 ##### Check aguments to determine mode
-mode = 'full'
+mode = ''
 if len(sys.argv) >= 2:
     if sys.argv[1] in ['base', 'meta', 'details']:
         mode = sys.argv[1]
     else:
         exit("Unknown argument 1 provided. Only 'base', 'meta', 'details' are valid.")
-elif len(sys.argv) == 3:
+if len(sys.argv) == 3:
     if sys.argv[2] == "only":
         mode += "_only"
     else:
         exit("Unknown argument 2 provided. Only 'only' is valid.")
-else:
+if mode == '':
     exit("To run provide an argument:\n" +
         "base, meta, details\n\n" +
         "A second argument can be provided to only run that particular section: only\n" +
@@ -119,12 +119,13 @@ if mode in ['base', 'base_only']:
             # the paths to the good bits
             counter_request_code = cr_td[0].div.attrs['id'] #wrong?
             counter_request_code = re.split('{|}|\'', cr_td[0].a.attrs['onclick'])[4]
-            counter_id = cr_td[0].text.split()[1]
+            counter_id = cr_td[0].text.strip()
+            #counter_id = cr_td[0].text.split()[1]
             counter_name = cr_td[1].text.strip()
             counter_road_id = cr_td[2].text.strip()
             road_speed = cr_td[4].text.strip()
 
-            print("Introductory data: ", counter_request_code, counter_id, counter_name, counter_road_id, road_speed)
+            print("Base data: ", counter_request_code, counter_id, counter_name, counter_road_id, road_speed)
             fh.write( table_headings[table_num] + delim + counter_request_code + delim + counter_id + delim + counter_name + delim + counter_road_id + delim + road_speed + "\n")
 
     fh.close()
@@ -139,9 +140,10 @@ if mode in ['base', 'base_only']:
 
 def get_lvl2(crc, get_soup=False):
     # hit the same url (POST), but with a request payload and headers
-    headers = {"Host": "www2.pch.etat.lu", "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Content-Type": "application/x-www-form-urlencoded", "Origin": "http://www2.pch.etat.lu", "DNT": "1", "Connection": "keep-alive", "Referer": "http://www2.pch.etat.lu/comptage/home.jsf", "Cookie": "JSESSIONID=" + session_id,  "Upgrade-Insecure-Requests": "1"}
+    headers = {"Host": "www2.pch.etat.lu", "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Content-Type": "application/x-www-form-urlencoded", "Origin": "http://www2.pch.etat.lu", "DNT": "1", "Connection": "keep-alive", "Referer": "http://www2.pch.etat.lu/comptage/home.jsf", "Cookie": "JSESSIONID=" + session_id, "Upgrade-Insecure-Requests": "1"}
 
-    payload = [('j_idt9', 'j_idt9'), ("j_idt9:j_idt12", ''), ('javax.faces.ViewState', viewstate_id), (crc, crc)]
+    #payload = [('j_idt9', 'j_idt9'), ("j_idt9:j_idt12", ''), ('javax.faces.ViewState', viewstate_id), (crc, crc)]
+    payload = [('j_idt9', 'j_idt9'), ('javax.faces.ViewState', viewstate_id), (crc, crc)]
 
     try:
         sub_req_result = requests.post(main_url, headers=headers, data=payload)
@@ -195,10 +197,16 @@ if mode in ['base', 'meta', 'meta_only']:
                 exit(parts)
     
             # Details/metadata file query (2/3 in hierarchy)
+            print("Getting lvl2 for CRC=" + str(crc))
             soup = get_lvl2(crc, get_soup=True)
 
-            soup.find(id="posteId")
-            form2_id = soup.find_all('form')[1].attrs['id']
+            #soup.find(id="posteId")
+            try:
+                form2_id = soup.find_all('form')[1].attrs['id']
+            except:
+                print(soup.find_all('form'))
+                exit()
+
             date_from = soup.find(id="posteId").find_all('strong')[2].text.strip()
             date_until = soup.find(id="posteId").find_all('strong')[3].text.strip()
             x,y =  [ re.split('=|&', soup.find('iframe').attrs['src'])[i] for i in [1,3] ]
@@ -232,6 +240,7 @@ count_successes = 0
 # used to 'reset' id  
 query_counter = 0
 
+# gets all the dates that data has been retrieved for, for a counter and direction
 def retrieved_dates(group, cid, dirid):
     dates = []
 
@@ -271,11 +280,11 @@ if mode in ['base', 'meta', 'details', 'details_only']:
 
     # iterates through all dates for each sensor
     # open the meta table with sensors list
-    with open(log_meta_data) as base_data:
+    with open(log_meta_data) as meta_data:
 
         last_cid = ""
         header = True
-        for counter_line in base_data:
+        for counter_line in meta_data:
             counter_line = counter_line.strip()
 
             # skip first line
@@ -340,7 +349,7 @@ if mode in ['base', 'meta', 'details', 'details_only']:
                 print(cid + "." + dirid + ": Trying to retrieve date " + str(start_date) + ". ", end="")
                 time.sleep(0.15)
 
-                headers = {"Host": "www2.pch.etat.lu", "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Content-Type": "application/x-www-form-urlencoded", "Origin": "http://www2.pch.etat.lu", "DNT": "1", "Connection": "keep-alive", "Referer": "http://www2.pch.etat.lu/comptage/home.jsf", "Cookie": "JSESSIONID=" + session_id,  "Upgrade-Insecure-Requests": "1"}
+                headers = {"Host": "www2.pch.etat.lu", "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Content-Type": "application/x-www-form-urlencoded", "Origin": "http://www2.pch.etat.lu", "DNT": "1", "Connection": "keep-alive", "Referer": "http://www2.pch.etat.lu/comptage/home.jsf", "Cookie": "JSESSIONID=" + session_id, "Upgrade-Insecure-Requests": "1"}
 
                 # meta request parameters, despite being variables, f2id is always the same - useless
                 payload = [ (f2id, f2id),
