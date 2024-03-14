@@ -13,7 +13,7 @@
 #include <Adafruit_GPS.h>
 
 /*-----( Declare Constants and Pin Numbers )-----*/
-//#define DEBUG
+#define DEBUG
 //#define BUTTONS_DEBUG
 //#define GPS_DEBUG
 #define BUTTONS // enable/disable buttons
@@ -339,6 +339,12 @@ void log_gps_data() {
     dataFile.print("\n");
     dataFile.close();
   }
+
+  #ifdef DEBUG
+    else {
+      Serial.print("No fix.");
+    }
+  #endif
 }
 
 bool read_gps_device_data() {
